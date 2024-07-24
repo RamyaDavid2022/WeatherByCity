@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather By City</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <section class="flex-container">
+        <div class="row">
+            <form id="weatherForm">
+                <input type="text" placeholder="Enter City Name:" name="city" id="city">
+                <button type="submit" id="getWeather">Submit</button>
+            </form>
+            <div id="weatherResult"></div>
+        </div>
+    </section>
+    <script>
+        document.getElementById('weatherForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the form from submitting and refreshing the page
+            const city = document.getElementById('city').value.trim(); // Trim any extra whitespace
+            if (!city) {
+                document.getElementById('weatherResult').innerHTML = '<p>Please enter a city name.</p>';
+                return;
+            }
+
+            const apiKey = 'e15777f35500affcbed88bfed4e86d85'; // Replace with your OpenWeather API key
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+            try {
+                console.log(apiUrl);
+                let response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                let data = await response.json();
+                console.log(data);
+                
+                const weather = `
+                    <h2>Weather in ${data.name}</h2>
+                    <p>Temperature: ${data.main.temp}°C</p>
+                    <p>Weather: ${data.weather[0].description}</p>
+                    <p>Humidity: ${data.main.humidity}%</p>
+                    <p>Wind Speed: ${data.wind.speed} m/s</p>
+                `;
+                document.getElementById('weatherResult').innerHTML = weather;
+            } catch (error) {
+                document.getElementById('weatherResult').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
